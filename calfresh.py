@@ -50,19 +50,37 @@ def table_lookups(household_size):
     )
 
 
+def calculate_medical(total_medical_spend):
+    if total_medical_spend < 35:
+        return 0
+    elif total_medical_spend < 155:
+        return 120
+    else:
+        return total_medical_spend
+
+
 def benefit(**args):
+    SUA_DEFAULT = 560
+    LUA_DEFAULT = 150
+    TUA_DEFAULT = 18
     application_date = args.get("application_date", datetime.date.today())
     household_size = args.get("household_size", 1)
     ineligible_count = args.get("ineligible_count", 0)
     earned_income = args.get("earned_imcome", 0)
+    ineligible_earned_income = args.get("ineligible_earned_income", 0)
     unearned_income = args.get("unearned_income", 0)
+    ineligible_unearned_income = args.get("ineligible_unearned_income", 0)
     child_support_paid = args.get("child_support_paid", 0)
-
-    print("Application date: ", application_date)
-    print("HH Size: ", household_size)
-    print("Ineligible count: ", ineligible_count)
-    print("Earned inocme: ", earned_income)
-    print("Unearned income: ", unearned_income)
+    dependent_care_cost = args.get("dependent_care_cost", 0)
+    gross_medical_expense = args.get("gross_medical_expense", 0)
+    disabled = args.get("disabled", False)
+    homeless = args.get("homeless", False)
+    eligible_housing = get("elgible_housing", 0)
+    ineligible_housing = get("inelgible_housing", 0)
+    sua_expense = get("sua_expense", 0)
+    lua_expense = get("lua_expense", 0)
+    tua_expense = get("tua_expense", 0)
+    total_persons = household_size + ineligible_count
     (
         gross_income_max,
         net_income_max,
@@ -70,14 +88,49 @@ def benefit(**args):
         maximum_benefit,
         hh_irt,
     ) = table_lookups(household_size)
-    print("Gross income limit: ", gross_income_max)
-    print("Standard deduction: ", standard_deduction)
-    print("Net income limit: ", net_income_max)
-    print("Maximum benefit: ", maximum_benefit)
-    print("IRT: ", hh_irt)
+    prorate_gross_max_income = earned_income + (
+        ineligible_earned_income * household_size / total_persons
+    )
+    earned_income_deduct = prorate_gross_max_income * 0.2
+    net_earned_income = prorate_gross_max_income - earned_income_deduct
+    net_income = unearned_income + net_earned_income - child_support_paid
+
+    if disabled:
+        allowed_medical = calculate_medical(gross_medical_expense)
+    else:
+        allowed_medical = 0
+
+    if homeless:
+        homeless_shelter = 157.20
+    else:
+        homeless_shelter = 0
+
+    adjusted_income = (
+        net_income
+        - standard_deduction
+        - dependent_care_cost
+        - allowed_medical
+        - homeless_shelter
+    )
+
+    prorated_housing = eligible_housing * (
+        household_size / total_persons
+    ) + ineligible_housing * (ineligible_count / total_persons)
+
+    if sua_expense > 0:
+        util_expense = SUA_DEFAULT
+    elif lua_expense > 0:
+        util_expense = LUA_DEFAULT
+    elif tua_expense > 0:
+        util_expense = TUA_DEFAULT
+    else:
+        util_expense = 0
+
+    return maximum_benefit
 
 
 for i in range(1, 6):
     print("-" * 40)
+    print("Household size: ", i)
     print(benefit(household_size=i))
     print
