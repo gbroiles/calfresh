@@ -14,8 +14,6 @@ def table_lookups(household_size):
     irt_increment = 512
     lookup_max = 8
     
-    try: household_size
-    except NameError: household_size = 1
     if household_size < 1:
         print("Household size cannot be less than 1.")
         sys.exit(1)
@@ -33,6 +31,7 @@ def table_lookups(household_size):
         standard_deduction = std_deduct[lookup_max -1] + (std_deduct_increment * (household_size - lookup_max))
         maximum_benefit = max_benefit[lookup_max - 1] + (max_benefit_increment * (household_size - lookup_max))
         hh_irt = irt[lookup_max -1] + (irt_increment * (household_size - lookup_max))
+    
     return(gross_income_max, net_income_max, standard_deduction, maximum_benefit, hh_irt)
 
 
@@ -56,7 +55,7 @@ def benefit(**args):
     print("Maximum benefit: ", maximum_benefit)
     print("IRT: ",hh_irt)
 
-for i in range(1,21,3):
+for i in range(1,6):
     print("-"*40)
     print(benefit(household_size=i))
     print
