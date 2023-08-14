@@ -75,11 +75,11 @@ def benefit(**args):
     gross_medical_expense = args.get("gross_medical_expense", 0)
     disabled = args.get("disabled", False)
     homeless = args.get("homeless", False)
-    eligible_housing = get("elgible_housing", 0)
-    ineligible_housing = get("inelgible_housing", 0)
-    sua_expense = get("sua_expense", 0)
-    lua_expense = get("lua_expense", 0)
-    tua_expense = get("tua_expense", 0)
+    eligible_housing = args.get("elgible_housing", 0)
+    ineligible_housing = args.get("inelgible_housing", 0)
+    sua_expense = args.get("sua_expense", 0)
+    lua_expense = args.get("lua_expense", 0)
+    tua_expense = args.get("tua_expense", 0)
     total_persons = household_size + ineligible_count
     (
         gross_income_max,
@@ -125,6 +125,31 @@ def benefit(**args):
         util_expense = TUA_DEFAULT
     else:
         util_expense = 0
+
+    adjusted_shelter = prorated_housing + util_expense
+    excluded_shelter = adjusted_income / 2
+    allowed_shelter = max(0, adjusted_shelter - excluded_shelter)
+    if disabled:
+        shelter_cost = allowed_shelter  # disabled HH has no shelter limit
+    else:
+        shelter_cost = min(560, allowed_shelter)  # nondisabled HH shelter max is 560
+
+    final_income = max(
+        adjusted_income - shelter_cost, 0
+    )  # make sure it is not negative
+
+    gross_income_pass = net_income < gross_income_max
+    net_income_pass = final_income < net_income_max
+
+    food_income = final_income * 0.3
+    if final_income == 0:
+        benefit = maximum_benefit
+    else:
+        benefit = maximum_benefit - food_income
+    if (benefit == 1 or benefit == 3 or benefit == 5) and household_size >= 3:
+        benefit += 1
+    if household_size <= 2:
+        benefit = max(benefit, 20)
 
     return maximum_benefit
 
