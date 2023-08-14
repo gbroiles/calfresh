@@ -33,50 +33,8 @@ def table_lookups(household_size):
         standard_deduction = std_deduct[lookup_max -1] + (std_deduct_increment * (household_size - lookup_max))
         maximum_benefit = max_benefit[lookup_max - 1] + (max_benefit_increment * (household_size - lookup_max))
         hh_irt = irt[lookup_max -1] + (irt_increment * (household_size - lookup_max))
-    return(gross_income_max, net_income_max, standard_deduction, hh_irt)
+    return(gross_income_max, net_income_max, standard_deduction, maximum_benefit, hh_irt)
 
-
-def gross_income_max(household_size):
-    income_limit = [2266, 3052, 3840, 4626, 5412, 6200, 6986, 7772]
-    income_increment = 758
-    try: household_size
-    except NameError: household_size = 1
-    if household_size < 1:
-        print("Household size cannot be less than 1.")
-        sys.exit(1)
-    lookup_max = len(income_limit)
-    if household_size <= lookup_max:
-        max = income_limit[household_size-1]
-    else:
-        max = income_limit[lookup_max -1] + (income_increment * (household_size - lookup_max))
-    return(max)
-
-def net_income_max(household_size):
-    income_limit = [1133, 1526, 1920, 2313, 2706, 3100, 3493, 3886]
-    income_increment = 394
-    try: household_size
-    except NameError: household_size = 1
-    if household_size < 1:
-        print("Household size cannot be less than 1.")
-        sys.exit(1)
-    lookup_max = len(income_limit)
-    if household_size <= lookup_max:
-        max = income_limit[household_size-1]
-    else:
-        max = income_limit[lookup_max -1] + (income_increment * (household_size - lookup_max))
-    return(max)
-
-def standard_deduction(household_size):
-    if household_size < 0:
-        print("Error - household size below zero.")
-        sys.exit(1)
-    if household_size < 5:
-        standard_deduction = 193
-    elif household_size < 6:
-        standard_deduction = 225
-    else:
-        standard_deduction = 258
-    return(standard_deduction) 
 
 def benefit(**args):
     application_date = args.get('application_date', datetime.date.today())
@@ -91,11 +49,15 @@ def benefit(**args):
     print("Ineligible count: ", ineligible_count)
     print("Earned inocme: ", earned_income)
     print("Unearned income: ", unearned_income)
-    print("Gross income limit: ", gross_income_max(household_size))
-    print("Standard deduction: ", standard_deduction(household_size))
-    print("Net income limit: ", net_income_max(household_size))
+    gross_income_max, net_income_max, standard_deduction, maximum_benefit, hh_irt = table_lookups(household_size)
+    print("Gross income limit: ", gross_income_max)
+    print("Standard deduction: ", standard_deduction)
+    print("Net income limit: ", net_income_max)
+    print("Maximum benefit: ", maximum_benefit)
+    print("IRT: ",hh_irt)
 
 for i in range(1,21,3):
+    print("-"*40)
     print(benefit(household_size=i))
     print
     
