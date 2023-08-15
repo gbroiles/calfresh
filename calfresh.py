@@ -7,6 +7,7 @@ No warranties express or implied, please see LICENSE file
 import datetime
 import math
 import sys
+import calfresh_tables as cft
 
 
 # rounding functions borrowed from https://realpython.com/python-rounding
@@ -20,20 +21,50 @@ def round_half_up(n, decimals=0):
     return math.floor(n * multiplier + 0.5) / multiplier
 
 
-def table_lookups(household_size):
+def table_lookups(household_size, target_date):
     global debug
 
-    gross_income_limit = [2266, 3052, 3840, 4626, 5412, 6200, 6986, 7772]
-    net_income_limit = [1133, 1526, 1920, 2313, 2706, 3100, 3493, 3886]
-    std_deduct = [193, 193, 193, 193, 225, 258, 258, 258]
-    max_benefit = [281, 516, 740, 939, 1116, 1339, 1480, 1691]
-    irt = [1473, 1984, 2496, 3007, 3518, 4030, 4541, 5052]
-    gross_income_increment = 758
-    net_income_increment = 394
-    std_deduct_increment = 0
-    max_benefit_increment = 211
-    irt_increment = 512
-    lookup_max = 8
+    mydate = datetime.date(target_date)
+    year = mydate.year()
+    if debug:
+        print(target_date)
+        print(mydate)
+        print(year)
+
+    gross_income_limit = cft(year, "gross_income_limit")
+    net_income_limit = cft(year, "net_income_limit")
+    std_deduct = cft(
+        year,
+    )
+    max_benefit = cft(
+        year,
+    )
+    irt = cft(
+        year,
+    )
+    gross_income_increment = cft(
+        year,
+    )
+    net_income_increment = cft(
+        year,
+    )
+    std_deduct_increment = cft(
+        year,
+    )
+    max_benefit_increment = cft(
+        year,
+    )
+    irt_increment = cft(
+        year,
+    )
+    lookup_max = cft(
+        year,
+    )
+    max_shelter_deduction = cft(year, max_shelter_deduction)
+    homeless_shelter_deduction = cft(year, homeless_shelter_deduction)
+    SUA_deduction = cft(year, SUA_deduction)
+    LUA_deduction = cft(year, LUA_deduction)
+    TUA_deduction = cft(year, TUA_deduction)
 
     if household_size < 1:
         print("Household size cannot be less than 1.")
@@ -89,9 +120,6 @@ def calculate_medical(total_medical_spend):
 def benefit(**args):
     global debug
 
-    SUA_DEFAULT = 560
-    LUA_DEFAULT = 150
-    TUA_DEFAULT = 18
     application_date = args.get("application_date", datetime.date.today())
     household_size = args.get("household_size", 1)
     ineligible_count = args.get("ineligible_count", 0)
