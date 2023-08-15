@@ -1,5 +1,17 @@
 import datetime
+import math
 import sys
+
+
+# rounding functions borrowed from https://realpython.com/python-rounding
+def round_down(n, decimals=0):
+    multiplier = 10**decimals
+    return math.floor(n * multiplier) / multiplier
+
+
+def round_half_up(n, decimals=0):
+    multiplier = 10**decimals
+    return math.floor(n * multiplier + 0.5) / multiplier
 
 
 def table_lookups(household_size):
@@ -40,6 +52,12 @@ def table_lookups(household_size):
             max_benefit_increment * (household_size - lookup_max)
         )
         hh_irt = irt[lookup_max - 1] + (irt_increment * (household_size - lookup_max))
+
+    print("Gross income max:", gross_income_max)
+    print("Net income max:", net_income_max)
+    print("Standard deduction:", standard_deduction)
+    print("Maximum benefit:", max_benefit)
+    print("IRT:", hh_irt)
 
     return (
         gross_income_max,
@@ -141,21 +159,22 @@ def benefit(**args):
     gross_income_pass = net_income < gross_income_max
     net_income_pass = final_income < net_income_max
 
-    food_income = final_income * 0.3
+    food_budget = final_income * 0.3
     if final_income == 0:
         benefit = maximum_benefit
     else:
-        benefit = maximum_benefit - food_income
+        benefit = maximum_benefit - food_budget
     if (benefit == 1 or benefit == 3 or benefit == 5) and household_size >= 3:
         benefit += 1
     if household_size <= 2:
         benefit = max(benefit, 20)
 
-    return maximum_benefit
+    return (round_down(benefit), gross_income_pass, net_income_pass)
 
 
-for i in range(1, 6):
-    print("-" * 40)
-    print("Household size: ", i)
-    print(benefit(household_size=i))
-    print
+print(benefit(household_size=2, unearned_income=1200))
+# for i in range(1, 6):
+#    print("-" * 40)
+#    print("Household size: ", i)
+#    print(benefit(household_size=i, unearned_income=1000))
+#    print
