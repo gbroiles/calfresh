@@ -175,6 +175,8 @@ def benefit(**args):
     if debug:
         print("Prorated housing:", prorated_housing)
         print("Utility expense", util_expense)
+        print("Adjusted shelter", adjusted_shelter)
+        print("Excluded shelter", excluded_shelter)
         print("Allowed shelter", allowed_shelter)
 
     final_income = max(
