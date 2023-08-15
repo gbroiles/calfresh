@@ -15,6 +15,9 @@ lookup = {
         "lookup_max": 8,
         "max_shelter_deduction": 560,
         "homeless_shelter_deduction": 157.20,
+        "SUA_deduction": 560,
+        "LUA_deduction": 150,
+        "TUA_deduction": 18,
     },
     "2024": {
         "begin_date": (2023, 10, 1),
@@ -32,5 +35,8 @@ lookup = {
         "lookup_max": 8,
         "max_shelter_deduction": 672,
         "homeless_shelter_deduction": 179.66,
+        "SUA_deduction": 560,
+        "LUA_deduction": 150,
+        "TUA_deduction": 18,
     },
 }
