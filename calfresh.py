@@ -29,37 +29,26 @@ def table_lookups(household_size, target_date):
     mydate = date.fromisoformat(target_date)
     year = mydate.year
     if debug:
-        print(target_date)
-        print(mydate)
-        print(year)
+        print("Target date: ",target_date)
+        print("My date: ", mydate)
+        print("Year: ", year)
+        print("HH size:", household_size)
     gross_income_limit = cft.lookup[year]["gross_income_limit"]
     net_income_limit = cft.lookup[year]["net_income_limit"]
     std_deduct = cft.lookup[year]["std_deduct"]
     max_benefit = cft.lookup[year]["max_benefit"]
     irt = cft.lookup[year]["irt"]
-    gross_income_increment = cft.lookup(
-        year, gross_income_increment
-    )
-    net_income_increment = cft.lookup(
-        year, net_income_increment
-    )
-    std_deduct_increment = cft.lookup(
-        year, std_deduct_increment
-    )
-    max_benefit_increment = cft.lookup(
-        year, max_benefit_increment
-    )
-    irt_increment = cft.lookup(
-        year, irt_increment
-    )
-    lookup_max = cft.lookup(
-        year, lookup_max
-    )
-    max_shelter_deduction = cft.lookup(year, max_shelter_deduction)
-    homeless_shelter_deduction = cft.lookup(year, homeless_shelter_deduction)
-    SUA_deduction = cft.lookup(year, SUA_deduction)
-    LUA_deduction = cft.lookup(year, LUA_deduction)
-    TUA_deduction = cft.lookup(year, TUA_deduction)
+    gross_income_increment = cft.lookup[year]["gross_income_increment"]
+    net_income_increment = cft.lookup[year]["net_income_increment"]
+    std_deduct_increment = cft.lookup[year]["std_deduct_increment"]
+    max_benefit_increment = cft.lookup[year]["max_benefit_increment"]
+    irt_increment = cft.lookup[year]["irt_increment"]
+    lookup_max = cft.lookup[year]["lookup_max"]
+    max_shelter_deduction = cft.lookup[year]["max_shelter_deduction"]
+    homeless_shelter_deduction = cft.lookup[year]["homeless_shelter_deduction"]
+    SUA_deduction = cft.lookup[year]["SUA_deduction"]
+    LUA_deduction = cft.lookup[year]["LUA_deduction"]
+    TUA_deduction = cft.lookup[year]["TUA_deduction"]
 
     if household_size < 1:
         print("Household size cannot be less than 1.")
@@ -91,7 +80,7 @@ def table_lookups(household_size, target_date):
         print("Gross income max:", gross_income_max)
         print("Net income max:", net_income_max)
         print("Standard deduction:", standard_deduction)
-        print("Maximum benefit:", max_benefit)
+        print("Maximum benefit:", maximum_benefit)
         print("IRT:", hh_irt)
 
     return (
@@ -101,6 +90,9 @@ def table_lookups(household_size, target_date):
         maximum_benefit,
         hh_irt,
         max_shelter_deduction,
+        SUA_deduction,
+        LUA_deduction,
+        TUA_deduction
     )
 
 
@@ -142,7 +134,10 @@ def benefit(**args):
         maximum_benefit,
         hh_irt,
         max_shelter_deduction,
-    ) = table_lookups(household_size,target_date)
+        sua_deduction,
+        lua_deduction,
+        tua_deduction
+    ) = table_lookups(household_size, target_date)
     prorate_gross_max_income = earned_income + (
         ineligible_earned_income * household_size / total_persons
     )
@@ -188,11 +183,11 @@ def benefit(**args):
         print("Total persons:", total_persons)
 
     if sua_expense > 0:
-        util_expense = SUA_DEFAULT
+        util_expense = sua_deduction
     elif lua_expense > 0:
-        util_expense = LUA_DEFAULT
+        util_expense = lua_deduction
     elif tua_expense > 0:
-        util_expense = TUA_DEFAULT
+        util_expense = tua_deduction
     else:
         util_expense = 0
 
@@ -221,8 +216,12 @@ def benefit(**args):
     food_budget = final_income * 0.3
     if final_income == 0:
         benefit = maximum_benefit
+        if debug:
+          print("Max benefit used because income = 0")
     else:
         benefit = maximum_benefit - food_budget
+        if debug:
+          print(f"{benefit} = {maximum_benefit} - {food_budget}")
     if (benefit == 1 or benefit == 3 or benefit == 5) and household_size >= 3:
         benefit += 1
     if household_size <= 2:
