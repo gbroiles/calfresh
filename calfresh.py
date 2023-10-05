@@ -5,10 +5,12 @@ No warranties express or implied, please see LICENSE file
 """
 
 import datetime
+from datetime import date
 import math
 import sys
 import calfresh_tables as cft
 
+debug = True
 
 # rounding functions borrowed from https://realpython.com/python-rounding
 def round_down(n, decimals=0):
@@ -24,47 +26,40 @@ def round_half_up(n, decimals=0):
 def table_lookups(household_size, target_date):
     global debug
 
-    mydate = datetime.date(target_date)
-    year = mydate.year()
+    mydate = date.fromisoformat(target_date)
+    year = mydate.year
     if debug:
         print(target_date)
         print(mydate)
         print(year)
-
-    gross_income_limit = cft(year, "gross_income_limit")
-    net_income_limit = cft(year, "net_income_limit")
-    std_deduct = cft(
-        year,
+    gross_income_limit = cft.lookup[year]["gross_income_limit"]
+    net_income_limit = cft.lookup[year]["net_income_limit"]
+    std_deduct = cft.lookup[year]["std_deduct"]
+    max_benefit = cft.lookup[year]["max_benefit"]
+    irt = cft.lookup[year]["irt"]
+    gross_income_increment = cft.lookup(
+        year, gross_income_increment
     )
-    max_benefit = cft(
-        year,
+    net_income_increment = cft.lookup(
+        year, net_income_increment
     )
-    irt = cft(
-        year,
+    std_deduct_increment = cft.lookup(
+        year, std_deduct_increment
     )
-    gross_income_increment = cft(
-        year,
+    max_benefit_increment = cft.lookup(
+        year, max_benefit_increment
     )
-    net_income_increment = cft(
-        year,
+    irt_increment = cft.lookup(
+        year, irt_increment
     )
-    std_deduct_increment = cft(
-        year,
+    lookup_max = cft.lookup(
+        year, lookup_max
     )
-    max_benefit_increment = cft(
-        year,
-    )
-    irt_increment = cft(
-        year,
-    )
-    lookup_max = cft(
-        year,
-    )
-    max_shelter_deduction = cft(year, max_shelter_deduction)
-    homeless_shelter_deduction = cft(year, homeless_shelter_deduction)
-    SUA_deduction = cft(year, SUA_deduction)
-    LUA_deduction = cft(year, LUA_deduction)
-    TUA_deduction = cft(year, TUA_deduction)
+    max_shelter_deduction = cft.lookup(year, max_shelter_deduction)
+    homeless_shelter_deduction = cft.lookup(year, homeless_shelter_deduction)
+    SUA_deduction = cft.lookup(year, SUA_deduction)
+    LUA_deduction = cft.lookup(year, LUA_deduction)
+    TUA_deduction = cft.lookup(year, TUA_deduction)
 
     if household_size < 1:
         print("Household size cannot be less than 1.")
@@ -105,6 +100,7 @@ def table_lookups(household_size, target_date):
         standard_deduction,
         maximum_benefit,
         hh_irt,
+        max_shelter_deduction,
     )
 
 
@@ -137,6 +133,7 @@ def benefit(**args):
     sua_expense = args.get("sua_expense", 0)
     lua_expense = args.get("lua_expense", 0)
     tua_expense = args.get("tua_expense", 0)
+    target_date = args.get("target_date", datetime.date.today())
     total_persons = household_size + ineligible_count
     (
         gross_income_max,
@@ -144,7 +141,8 @@ def benefit(**args):
         standard_deduction,
         maximum_benefit,
         hh_irt,
-    ) = table_lookups(household_size)
+        max_shelter_deduction,
+    ) = table_lookups(household_size,target_date)
     prorate_gross_max_income = earned_income + (
         ineligible_earned_income * household_size / total_persons
     )
@@ -204,7 +202,7 @@ def benefit(**args):
     if disabled:
         shelter_cost = allowed_shelter  # disabled HH has no shelter limit
     else:
-        shelter_cost = min(560, allowed_shelter)  # nondisabled HH shelter max is 560
+        shelter_cost = min(max_shelter_deduction, allowed_shelter)  # nondisabled HH shelter max is capped at max_shelter_deduction
 
     if debug:
         print("Prorated housing:", prorated_housing)
@@ -233,18 +231,3 @@ def benefit(**args):
     return (round_down(benefit), gross_income_pass, net_income_pass)
 
 
-debug = True
-print(
-    benefit(
-        household_size=2,
-        unearned_income=1200,
-        disabled=1,
-        eligible_housing=500,
-        sua_expense=1,
-    )
-)
-# for i in range(1, 6):
-#    print("-" * 40)
-#    print("Household size: ", i)
-#    print(benefit(household_size=i, unearned_income=1000))
-#    print

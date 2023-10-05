@@ -1,5 +1,5 @@
 lookup = {
-    "2023": {
+    2023: {
         "begin_date": (2022, 10, 1),
         "end_date": (2023, 9, 30),
         "gross_income_limit": [2266, 3052, 3840, 4626, 5412, 6200, 6986, 7772],
@@ -19,24 +19,24 @@ lookup = {
         "LUA_deduction": 150,
         "TUA_deduction": 18,
     },
-    "2024": {
+    2024: {
         "begin_date": (2023, 10, 1),
         "end_date": (2024, 9, 30),
-        "gross_income_limit": [2266, 3052, 3840, 4626, 5412, 6200, 6986, 7772],
+        "gross_income_limit": [2430, 3288, 4144, 5000, 5856, 6714, 7570, 8428],
         "net_income_limit": [1215, 1644, 2072, 2500, 2929, 3357, 3785, 4214],
         "std_deduct": [198, 198, 198, 208, 244, 279, 279, 279],
         "max_benefit": [291, 535, 766, 973, 1155, 1386, 1532, 1751],
-        "irt": [1473, 1984, 2496, 3007, 3518, 4030, 4541, 5052],
-        "gross_income_increment": 758,
+        "irt": [1580, 2137, 2694, 3250, 3807, 4364, 4921, 5478],
+        "gross_income_increment": 858,
         "net_income_increment": 429,
         "std_deduct_increment": 0,
         "max_benefit_increment": 219,
-        "irt_increment": 512,
+        "irt_increment": 557,
         "lookup_max": 8,
         "max_shelter_deduction": 672,
         "homeless_shelter_deduction": 179.66,
-        "SUA_deduction": 560,
-        "LUA_deduction": 150,
-        "TUA_deduction": 18,
+        "SUA_deduction": 596,
+        "LUA_deduction": 158,
+        "TUA_deduction": 19,
     },
 }
