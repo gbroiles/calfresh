@@ -5,7 +5,6 @@ No warranties express or implied, please see LICENSE file
 """
 
 import datetime
-from datetime import date
 import math
 import sys
 import calfresh_tables as cft
@@ -26,7 +25,7 @@ def round_half_up(n, decimals=0):
 def table_lookups(household_size, target_date):
     global debug
 
-    mydate = date.fromisoformat(target_date)
+    mydate = datetime.date.fromisoformat(target_date)
     year = mydate.year
     if debug:
         print("Target date: ",target_date)
