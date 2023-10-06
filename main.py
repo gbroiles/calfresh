@@ -1,6 +1,6 @@
 import calfresh as cf
 
-debug = True
+#debug = True
 print(
     cf.benefit(
         household_size=2,
@@ -11,6 +11,29 @@ print(
         target_date="2023-10-01"
     )
 )
+print ("\n","*"*20)
+print(
+    cf.benefit(
+        household_size=2,
+        unearned_income=1200,
+        disabled=1,
+        eligible_housing=500,
+        sua_expense=1,
+        target_date="2023-09-01"
+    )
+)
+print ("\n","*"*20)
+print(
+    cf.benefit(
+        household_size=2,
+        unearned_income=1200,
+        disabled=1,
+        eligible_housing=500,
+        sua_expense=1,
+        target_date="2022-10-01"
+    )
+)
+
 # for i in range(1, 6):
 #    print("-" * 40)
 #    print("Household size: ", i)

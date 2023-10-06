@@ -9,7 +9,7 @@ import math
 import sys
 import calfresh_tables as cft
 
-debug = True
+debug = False
 
 # rounding functions borrowed from https://realpython.com/python-rounding
 def round_down(n, decimals=0):
@@ -24,9 +24,16 @@ def round_half_up(n, decimals=0):
 
 def table_lookups(household_size, target_date):
     global debug
-
+  
     mydate = datetime.date.fromisoformat(target_date)
-    year = mydate.year
+    for year in cft.lookup:
+      if mydate >= datetime.date.fromisoformat(cft.lookup[year]["begin_date"]) and mydate <= datetime.date.fromisoformat(cft.lookup[year]["end_date"]):
+        break
+    else:
+      print(f"{target_date} not found in available data")
+      sys.exit(1)
+      
+  
     if debug:
         print("Target date: ",target_date)
         print("My date: ", mydate)
