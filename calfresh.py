@@ -28,7 +28,7 @@ def table_lookups(household_size, target_date):
     mydate = datetime.date.fromisoformat(target_date)
     year = mydate.year
     if debug:
-        print("Target date: ",target_date)
+        print("Target date: ", target_date)
         print("My date: ", mydate)
         print("Year: ", year)
         print("HH size:", household_size)
@@ -91,7 +91,7 @@ def table_lookups(household_size, target_date):
         max_shelter_deduction,
         SUA_deduction,
         LUA_deduction,
-        TUA_deduction
+        TUA_deduction,
     )
 
 
@@ -135,7 +135,7 @@ def benefit(**args):
         max_shelter_deduction,
         sua_deduction,
         lua_deduction,
-        tua_deduction
+        tua_deduction,
     ) = table_lookups(household_size, target_date)
     prorate_gross_max_income = earned_income + (
         ineligible_earned_income * household_size / total_persons
@@ -196,7 +196,9 @@ def benefit(**args):
     if disabled:
         shelter_cost = allowed_shelter  # disabled HH has no shelter limit
     else:
-        shelter_cost = min(max_shelter_deduction, allowed_shelter)  # nondisabled HH shelter max is capped at max_shelter_deduction
+        shelter_cost = min(
+            max_shelter_deduction, allowed_shelter
+        )  # nondisabled HH shelter max is capped at max_shelter_deduction
 
     if debug:
         print("Prorated housing:", prorated_housing)
@@ -216,16 +218,14 @@ def benefit(**args):
     if final_income == 0:
         benefit = maximum_benefit
         if debug:
-          print("Max benefit used because income = 0")
+            print("Max benefit used because income = 0")
     else:
         benefit = maximum_benefit - food_budget
         if debug:
-          print(f"{benefit} = {maximum_benefit} - {food_budget}")
+            print(f"{benefit} = {maximum_benefit} - {food_budget}")
     if (benefit == 1 or benefit == 3 or benefit == 5) and household_size >= 3:
         benefit += 1
     if household_size <= 2:
         benefit = max(benefit, 20)
 
     return (round_down(benefit), gross_income_pass, net_income_pass)
-
-

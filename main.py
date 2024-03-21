@@ -8,7 +8,7 @@ print(
         disabled=1,
         eligible_housing=500,
         sua_expense=1,
-        target_date="2023-10-01"
+        target_date="2023-10-01",
     )
 )
 # for i in range(1, 6):
